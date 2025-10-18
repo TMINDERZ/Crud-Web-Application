@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using JokeAWebApp.Data;
 using JokeAWebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace JokeAWebApp.Controllers
 {
@@ -23,6 +24,18 @@ namespace JokeAWebApp.Controllers
         public async Task<IActionResult> Index()
         {
             return View(await _context.Joke.ToListAsync());
+        }
+
+        // GET: Jokes/ShowSearchForm
+        public async Task<IActionResult> ShowSearchForm()
+        {
+            return View();
+        }
+
+        // Post: Jokes/ShowSearchResults
+        public async Task<IActionResult> ShowSearchResult(String SearchPhrase)
+        {
+            return View("Index", await _context.Joke.Where(j => j.JokeQuestion.Contains(SearchPhrase)).ToListAsync());
         }
 
         // GET: Jokes/Details/5
@@ -44,6 +57,7 @@ namespace JokeAWebApp.Controllers
         }
 
         // GET: Jokes/Create
+        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -54,6 +68,7 @@ namespace JokeAWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("Id,JokeQuestion,JokeAnswer")] Joke joke)
         {
             if (ModelState.IsValid)
@@ -66,6 +81,7 @@ namespace JokeAWebApp.Controllers
         }
 
         // GET: Jokes/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -86,6 +102,7 @@ namespace JokeAWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("Id,JokeQuestion,JokeAnswer")] Joke joke)
         {
             if (id != joke.Id)
@@ -117,6 +134,7 @@ namespace JokeAWebApp.Controllers
         }
 
         // GET: Jokes/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -135,6 +153,7 @@ namespace JokeAWebApp.Controllers
         }
 
         // POST: Jokes/Delete/5
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
